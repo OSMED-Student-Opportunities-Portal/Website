@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Opportunities Widget</title>
+  <style>
+    :root {
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --bg: #ffffff;
+      --shadow: 0 10px 25px rgba(0,0,0,.08);
+      --radius: 16px;
+      --pad: 14px;
+      --chip: #f3f4f6;
+    }
+
+    body {
+      margin: 0;
+      background: transparent;
+      color: var(--text);
+      font-family: Arial, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 8px;
+    }
+
+    /* Cards grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--pad);
+      box-shadow: var(--shadow);
+    }
+
+    .title {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .label {
+      color: var(--muted);
+      min-width: 160px;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--chip);
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button:hover { background: #f3f4f6; }
+
+    /* Modal */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 9999;
+    }
+    .backdrop.open { display: flex; }
+
+    .modal {
+      width: min(720px, 100%);
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .modal-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .modal-title {
+      margin: 0;
+      font-size: 18px;
+    }
+    .close {
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 8px 10px;
+    }
+    .modal-body {
+      padding: 14px 16px;
+      color: #1f2937;
+      line-height: 1.5;
+      font-size: 14px;
+      white-space: pre-wrap; /* keeps your line breaks */
+    }
+
+    /* Optional: a “no results” state for filtering later */
+    .empty {
+      display: none;
+      padding: 14px;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+      margin-top: 12px;
+    }
+    .empty.show { display: block; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div id="grid" class="grid" aria-live="polite"></div>
+    <div id="empty" class="empty">No opportunities match the current filters.</div>
+  </div>
+
+  <!-- Modal -->
+  <div id="backdrop" class="backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 id="modalTitle" class="modal-title"></h3>
+        <button id="closeBtn" class="close" type="button" aria-label="Close">✕</button>
+      </div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * DATA MODEL (edit this)
+     * domain, eduLevel, locationType should be consistent strings (for filtering later)
+     */
+    const opportunities = [
+      {
+        id: "nasa-internships",
+        title: "NASA Internships",
+        domain: "Aerospace",
+        eduLevel: "Undergraduate",
+        locationType: "In-person",
+        description:
+`NASA internships across centers.
+Eligibility, deadlines, and project areas vary.
+
+Add your own description here.`
+      },
+      {
+        id: "astro-research-lab",
+        title: "Astrophysics Research Lab Position",
+        domain: "Astronomy",
+        eduLevel: "High School",
+        locationType: "Hybrid",
+        description:
+`Student research assistant role in an astrophysics lab.
+Include details like:
+- prerequisites
+- time commitment
+- how to apply`
+      }
+    ];
+
+    const grid = document.getElementById("grid");
+    const empty = document.getElementById("empty");
+
+    const backdrop = document.getElementById("backdrop");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const closeBtn = document.getElementById("closeBtn");
+
+    // ---- RENDER ----
+    function renderCards(list) {
+      grid.innerHTML = "";
+      for (const opp of list) {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        // Architecture for filtering:
+        // These data-* attributes are what your future filter UI will read.
+        card.dataset.domain = opp.domain;
+        card.dataset.edu = opp.eduLevel;
+        card.dataset.location = opp.locationType;
+        card.dataset.id = opp.id;
+
+        card.innerHTML = `
+          <h2 class="title">${escapeHtml(opp.title)}</h2>
+
+          <div class="meta">
+            <div class="row">
+              <span class="label">Domain</span>
+              <span class="chip">${escapeHtml(opp.domain)}</span>
+            </div>
+            <div class="row">
+              <span class="label">Education Level Requirement</span>
+              <span class="chip">${escapeHtml(opp.eduLevel)}</span>
+            </div>
+            <div class="row">
+              <span class="label">Location Type</span>
+              <span class="chip">${escapeHtml(opp.locationType)}</span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="button" data-action="details" data-id="${escapeHtml(opp.id)}">Details</button>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      }
+
+      empty.classList.toggle("show", list.length === 0);
+    }
+
+    // ---- MODAL ----
+    function openModal(opp) {
+      modalTitle.textContent = opp.title;
+      modalBody.textContent = opp.description;
+      backdrop.classList.add("open");
+      backdrop.setAttribute("aria-hidden", "false");
+      closeBtn.focus();
+    }
+
+    function closeModal() {
+      backdrop.classList.remove("open");
+      backdrop.setAttribute("aria-hidden", "true");
+    }
+
+    closeBtn.addEventListener("click", closeModal);
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && backdrop.classList.contains("open")) closeModal();
+    });
+
+    // Event delegation for Details buttons
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest('button[data-action="details"]');
+      if (!btn) return;
+
+      const id = btn.dataset.id;
+      const opp = opportunities.find(o => o.id === id);
+      if (!opp) return;
+
+      openModal(opp);
+    });
+
+    // ---- FILTER ARCHITECTURE (stub) ----
+    // Later, your filter UI can call setFilters({domain, eduLevel, locationType})
+    const activeFilters = { domain: null, eduLevel: null, locationType: null };
+
+    function setFilters({ domain = null, eduLevel = null, locationType = null }) {
+      activeFilters.domain = domain;
+      activeFilters.eduLevel = eduLevel;
+      activeFilters.locationType = locationType;
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const filtered = opportunities.filter(o => {
+        const okDomain = !activeFilters.domain || o.domain === activeFilters.domain;
+        const okEdu = !activeFilters.eduLevel || o.eduLevel === activeFilters.eduLevel;
+        const okLoc = !activeFilters.locationType || o.locationType === activeFilters.locationType;
+        return okDomain && okEdu && okLoc;
+      });
+      renderCards(filtered);
+    }
+
+    // Simple HTML escaping
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    // Initial render
+    renderCards(opportunities);
+
+    // Expose filter function globally for future UI / debugging
+    window.OpportunityWidget = { setFilters };
+  </script>
+</body>
+</html>
