@@ -1,335 +1,253 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Student Opportunities Widget</title>
-  <style>
-    :root {
-      --border: #e5e7eb;
-      --text: #111827;
-      --muted: #6b7280;
-      --bg: #ffffff;
-      --shadow: 0 10px 25px rgba(0,0,0,.08);
-      --radius: 16px;
-      --pad: 14px;
-      --chip: #f3f4f6;
-    }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Student Opportunities</title>
 
-    body {
-      margin: 0;
-      background: transparent;
-      color: var(--text);
-      font-family: Arial, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    }
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:transparent;
+}
 
-    .wrap {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 8px;
-    }
+.wrap{
+  max-width:1100px;
+  margin:auto;
+  padding:12px;
+}
 
-    /* Cards grid */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-    @media (max-width: 720px) {
-      .grid { grid-template-columns: 1fr; }
-    }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
 
-    .card {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: var(--pad);
-      box-shadow: var(--shadow);
-    }
+@media(max-width:900px){
+  .grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr;}
+}
 
-    .title {
-      margin: 0 0 10px 0;
-      font-size: 18px;
-      line-height: 1.2;
-    }
+.card{
+  border:1px solid #e5e7eb;
+  border-radius:16px;
+  padding:16px;
+  background:white;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
 
-    .meta {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
+.title{
+  margin:0 0 12px 0;
+  font-size:20px;
+}
 
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
-    }
+.meta{
+  font-size:14px;
+  margin-bottom:14px;
+}
 
-    .label {
-      color: var(--muted);
-      min-width: 160px;
-    }
+.meta div{
+  margin-bottom:6px;
+}
 
-    .chip {
-      display: inline-block;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--chip);
-      border: 1px solid var(--border);
-      font-size: 13px;
-    }
+button{
+  background:#111827;
+  color:white;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
+button:hover{
+  background:black;
+}
 
-    button {
-      border: 1px solid var(--border);
-      background: #f9fafb;
-      color: var(--text);
-      border-radius: 12px;
-      padding: 10px 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    button:hover { background: #f3f4f6; }
+.backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
 
-    /* Modal */
-    .backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      z-index: 9999;
-    }
-    .backdrop.open { display: flex; }
+.backdrop.open{
+  display:flex;
+}
 
-    .modal {
-      width: min(720px, 100%);
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .modal-head {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .modal-title {
-      margin: 0;
-      font-size: 18px;
-    }
-    .close {
-      font-weight: 800;
-      border-radius: 999px;
-      padding: 8px 10px;
-    }
-    .modal-body {
-      padding: 14px 16px;
-      color: #1f2937;
-      line-height: 1.5;
-      font-size: 14px;
-      white-space: pre-wrap; /* keeps your line breaks */
-    }
+.modal{
+  background:white;
+  max-width:700px;
+  width:100%;
+  border-radius:18px;
+  padding:20px;
+}
 
-    /* Optional: a “no results” state for filtering later */
-    .empty {
-      display: none;
-      padding: 14px;
-      color: var(--muted);
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
-      text-align: center;
-      margin-top: 12px;
-    }
-    .empty.show { display: block; }
-  </style>
+.close{
+  float:right;
+  cursor:pointer;
+  font-weight:bold;
+}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div id="grid" class="grid" aria-live="polite"></div>
-    <div id="empty" class="empty">No opportunities match the current filters.</div>
-  </div>
+<div class="wrap">
+  <div id="grid" class="grid"></div>
+</div>
 
-  <!-- Modal -->
-  <div id="backdrop" class="backdrop" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal">
-      <div class="modal-head">
-        <h3 id="modalTitle" class="modal-title"></h3>
-        <button id="closeBtn" class="close" type="button" aria-label="Close">✕</button>
-      </div>
-      <div id="modalBody" class="modal-body"></div>
+<div id="backdrop" class="backdrop">
+  <div class="modal">
+    <div>
+      <span id="closeBtn" class="close">✕</span>
+      <h2 id="modalTitle"></h2>
     </div>
+    <div id="modalBody"></div>
   </div>
+</div>
 
-  <script>
-    /**
-     * DATA MODEL (edit this)
-     * domain, eduLevel, locationType should be consistent strings (for filtering later)
-     */
-    const opportunities = [
-      {
-        id: "nasa-internships",
-        title: "NASA Internships",
-        domain: "Aerospace",
-        eduLevel: "Undergraduate",
-        locationType: "In-person",
-        description:
-`NASA internships across centers.
-Eligibility, deadlines, and project areas vary.
+<script>
 
-Add your own description here.`
-      },
-      {
-        id: "astro-research-lab",
-        title: "Astrophysics Research Lab Position",
-        domain: "Astronomy",
-        eduLevel: "High School",
-        locationType: "Hybrid",
-        description:
-`Student research assistant role in an astrophysics lab.
-Include details like:
-- prerequisites
-- time commitment
-- how to apply`
-      }
-    ];
+// ===============================
+// 🔴 PASTE YOUR PUBLISHED CSV LINK BELOW
+// ===============================
+const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrvzLfDN30Re_NAwIKCx3V1RTU1A_58ohgRA2dSLyDLJmSgFPMYK0YgcF2SsbgaYVT0QmY5ZYsN666/pub?gid=1646305040&single=true&output=csv";
+// ===============================
 
-    const grid = document.getElementById("grid");
-    const empty = document.getElementById("empty");
 
-    const backdrop = document.getElementById("backdrop");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalBody = document.getElementById("modalBody");
-    const closeBtn = document.getElementById("closeBtn");
+let opportunities = [];
 
-    // ---- RENDER ----
-    function renderCards(list) {
-      grid.innerHTML = "";
-      for (const opp of list) {
-        const card = document.createElement("div");
-        card.className = "card";
+const grid = document.getElementById("grid");
+const backdrop = document.getElementById("backdrop");
+const modalTitle = document.getElementById("modalTitle");
+const modalBody = document.getElementById("modalBody");
+const closeBtn = document.getElementById("closeBtn");
 
-        // Architecture for filtering:
-        // These data-* attributes are what your future filter UI will read.
-        card.dataset.domain = opp.domain;
-        card.dataset.edu = opp.eduLevel;
-        card.dataset.location = opp.locationType;
-        card.dataset.id = opp.id;
+function parseCSV(text){
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
 
-        card.innerHTML = `
-          <h2 class="title">${escapeHtml(opp.title)}</h2>
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    const next = text[i+1];
 
-          <div class="meta">
-            <div class="row">
-              <span class="label">Domain</span>
-              <span class="chip">${escapeHtml(opp.domain)}</span>
-            </div>
-            <div class="row">
-              <span class="label">Education Level Requirement</span>
-              <span class="chip">${escapeHtml(opp.eduLevel)}</span>
-            </div>
-            <div class="row">
-              <span class="label">Location Type</span>
-              <span class="chip">${escapeHtml(opp.locationType)}</span>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button type="button" data-action="details" data-id="${escapeHtml(opp.id)}">Details</button>
-          </div>
-        `;
-
-        grid.appendChild(card);
-      }
-
-      empty.classList.toggle("show", list.length === 0);
+    if(c === '"' && inQuotes && next === '"'){
+      cell += '"';
+      i++;
+      continue;
     }
 
-    // ---- MODAL ----
-    function openModal(opp) {
-      modalTitle.textContent = opp.title;
-      modalBody.textContent = opp.description;
-      backdrop.classList.add("open");
-      backdrop.setAttribute("aria-hidden", "false");
-      closeBtn.focus();
+    if(c === '"'){
+      inQuotes = !inQuotes;
+      continue;
     }
 
-    function closeModal() {
-      backdrop.classList.remove("open");
-      backdrop.setAttribute("aria-hidden", "true");
+    if(c === "," && !inQuotes){
+      row.push(cell);
+      cell = "";
+      continue;
     }
 
-    closeBtn.addEventListener("click", closeModal);
-    backdrop.addEventListener("click", (e) => {
-      if (e.target === backdrop) closeModal();
+    if((c === "\n" || c === "\r") && !inQuotes){
+      if(c === "\r" && next === "\n") i++;
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = "";
+      continue;
+    }
+
+    cell += c;
+  }
+
+  if(cell.length || row.length){
+    row.push(cell);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+async function loadData(){
+  const res = await fetch(SHEET_URL);
+  const text = await res.text();
+  const rows = parseCSV(text);
+
+  // skip header row (row 0)
+  for(let i=1;i<rows.length;i++){
+    const r = rows[i];
+
+    if(!r[1]) continue; // skip if no title
+
+    opportunities.push({
+      id: "row-" + i,
+      title: r[1],        // Column B
+      description: r[2] || "",  // Column C (change if needed)
+      url: r[3] || "",    // Column D (change if needed)
+      domain: r[30] || "",      // AE
+      eduLevel: r[31] || "",    // AF
+      locationType: r[32] || "" // AG
     });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && backdrop.classList.contains("open")) closeModal();
-    });
+  }
 
-    // Event delegation for Details buttons
-    grid.addEventListener("click", (e) => {
-      const btn = e.target.closest('button[data-action="details"]');
-      if (!btn) return;
+  renderCards();
+}
 
-      const id = btn.dataset.id;
-      const opp = opportunities.find(o => o.id === id);
-      if (!opp) return;
+function renderCards(){
+  grid.innerHTML = "";
 
-      openModal(opp);
-    });
+  opportunities.forEach(opp => {
+    const card = document.createElement("div");
+    card.className = "card";
 
-    // ---- FILTER ARCHITECTURE (stub) ----
-    // Later, your filter UI can call setFilters({domain, eduLevel, locationType})
-    const activeFilters = { domain: null, eduLevel: null, locationType: null };
+    card.innerHTML = `
+      <h3 class="title">${opp.title}</h3>
+      <div class="meta">
+        <div><strong>Domain:</strong> ${opp.domain}</div>
+        <div><strong>Education Level:</strong> ${opp.eduLevel}</div>
+        <div><strong>Location Type:</strong> ${opp.locationType}</div>
+      </div>
+      <button data-id="${opp.id}">Details</button>
+    `;
 
-    function setFilters({ domain = null, eduLevel = null, locationType = null }) {
-      activeFilters.domain = domain;
-      activeFilters.eduLevel = eduLevel;
-      activeFilters.locationType = locationType;
-      applyFilters();
-    }
+    grid.appendChild(card);
+  });
+}
 
-    function applyFilters() {
-      const filtered = opportunities.filter(o => {
-        const okDomain = !activeFilters.domain || o.domain === activeFilters.domain;
-        const okEdu = !activeFilters.eduLevel || o.eduLevel === activeFilters.eduLevel;
-        const okLoc = !activeFilters.locationType || o.locationType === activeFilters.locationType;
-        return okDomain && okEdu && okLoc;
-      });
-      renderCards(filtered);
-    }
+grid.addEventListener("click", function(e){
+  if(e.target.tagName === "BUTTON"){
+    const id = e.target.dataset.id;
+    const opp = opportunities.find(o => o.id === id);
+    if(!opp) return;
 
-    // Simple HTML escaping
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
+    modalTitle.textContent = opp.title;
+    modalBody.innerHTML = `
+      <p>${opp.description.replaceAll("\n","<br>")}</p>
+      ${opp.url ? `<p><a href="${opp.url}" target="_blank">Open Link ↗</a></p>` : ""}
+    `;
 
-    // Initial render
-    renderCards(opportunities);
+    backdrop.classList.add("open");
+  }
+});
 
-    // Expose filter function globally for future UI / debugging
-    window.OpportunityWidget = { setFilters };
-  </script>
+closeBtn.addEventListener("click", () => backdrop.classList.remove("open"));
+backdrop.addEventListener("click", e => {
+  if(e.target === backdrop) backdrop.classList.remove("open");
+});
+
+loadData();
+
+</script>
 </body>
 </html>
