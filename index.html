@@ -6,106 +6,198 @@
 <title>Student Opportunities</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:transparent;
-}
+  :root{
+    --border:#e5e7eb;
+    --text:#111827;
+    --muted:#6b7280;
+    --shadow:0 10px 25px rgba(0,0,0,.08);
+  }
 
-.wrap{
-  max-width:1100px;
-  margin:auto;
-  padding:12px;
-}
+  body{margin:0;font-family:Arial,system-ui,sans-serif;background:#fff;color:var(--text);}
+  .wrap{max-width:1100px;margin:auto;padding:12px;}
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-}
+  .status{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:10px 12px;
+    background:#f9fafb;
+    margin-bottom:12px;
+    font-size:14px;
+  }
 
-@media(max-width:900px){
-  .grid{grid-template-columns:repeat(2,1fr);}
-}
-@media(max-width:600px){
-  .grid{grid-template-columns:1fr;}
-}
+  .filters{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0,1fr));
+    gap:12px;
+    margin-bottom:10px;
+  }
+  @media(max-width:900px){ .filters{grid-template-columns:1fr;} }
 
-.card{
-  border:1px solid #e5e7eb;
-  border-radius:16px;
-  padding:16px;
-  background:white;
-  box-shadow:0 8px 20px rgba(0,0,0,.08);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-}
+  .filter{
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:10px;
+    background:#fff;
+  }
 
-.title{
-  margin:0 0 12px 0;
-  font-size:20px;
-}
+  .filter-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:8px;
+  }
 
-.meta{
-  font-size:14px;
-  margin-bottom:14px;
-}
+  .filter-title{
+    font-size:12px;
+    color:var(--muted);
+    font-weight:900;
+    letter-spacing:.02em;
+    margin:0;
+  }
 
-.meta div{
-  margin-bottom:6px;
-}
+  .clear{
+    border:1px solid var(--border);
+    background:#fff;
+    border-radius:12px;
+    padding:8px 10px;
+    font-weight:900;
+    cursor:pointer;
+    font-size:12px;
+  }
+  .clear:hover{background:#f3f4f6;}
 
-button{
-  background:#111827;
-  color:white;
-  border:none;
-  padding:10px 14px;
-  border-radius:10px;
-  font-weight:bold;
-  cursor:pointer;
-}
+  .chips{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
 
-button:hover{
-  background:black;
-}
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 10px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:#fff;
+    cursor:pointer;
+    user-select:none;
+    font-size:13px;
+    font-weight:800;
+  }
 
-.backdrop{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.5);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
+  .chip input{
+    width:16px;height:16px;
+    margin:0;
+  }
 
-.backdrop.open{
-  display:flex;
-}
+  .chip[data-checked="true"]{
+    background:#111827;
+    color:#fff;
+    border-color:#111827;
+  }
 
-.modal{
-  background:white;
-  max-width:700px;
-  width:100%;
-  border-radius:18px;
-  padding:20px;
-}
+  .actions{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:12px;
+  }
+  .reset{
+    border:1px solid var(--border);
+    background:#fff;
+    border-radius:12px;
+    padding:10px 12px;
+    font-weight:900;
+    cursor:pointer;
+  }
+  .reset:hover{background:#f3f4f6;}
 
-.close{
-  float:right;
-  cursor:pointer;
-  font-weight:bold;
-}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:600px){.grid{grid-template-columns:1fr;}}
+
+  .card{
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:16px;
+    background:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+  .title{margin:0 0 12px 0;font-size:20px;line-height:1.25;}
+  .meta{font-size:14px;margin-bottom:14px;}
+  .meta div{margin-bottom:6px;}
+
+  .details{
+    background:#111827;color:#fff;border:none;padding:10px 14px;border-radius:10px;
+    font-weight:900;cursor:pointer;
+  }
+  .details:hover{background:#000;}
+
+  .backdrop{
+    position:fixed;inset:0;background:rgba(0,0,0,.5);
+    display:none;align-items:center;justify-content:center;padding:20px;
+    z-index:9999;
+  }
+  .backdrop.open{display:flex;}
+  .modal{background:#fff;max-width:750px;width:100%;border-radius:18px;padding:20px;}
+  .close{float:right;cursor:pointer;font-weight:900;}
+
+  .empty{
+    display:none;
+    margin-top:12px;
+    border:1px dashed var(--border);
+    border-radius:14px;
+    padding:14px;
+    color:var(--muted);
+    text-align:center;
+  }
+  .empty.show{display:block;}
 </style>
 </head>
 
 <body>
 <div class="wrap">
+  <div id="status" class="status">Loading opportunities…</div>
+
+  <div class="filters">
+    <div class="filter">
+      <div class="filter-head">
+        <p class="filter-title">Domain (multi-select)</p>
+        <button id="clearDomain" class="clear" type="button">Clear</button>
+      </div>
+      <div id="domainChips" class="chips"></div>
+    </div>
+
+    <div class="filter">
+      <div class="filter-head">
+        <p class="filter-title">Education level (multi-select)</p>
+        <button id="clearEdu" class="clear" type="button">Clear</button>
+      </div>
+      <div id="eduChips" class="chips"></div>
+    </div>
+
+    <div class="filter">
+      <div class="filter-head">
+        <p class="filter-title">Location type (multi-select)</p>
+        <button id="clearLoc" class="clear" type="button">Clear</button>
+      </div>
+      <div id="locChips" class="chips"></div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="resetBtn" class="reset" type="button">Reset all</button>
+  </div>
+
   <div id="grid" class="grid"></div>
+  <div id="empty" class="empty">No opportunities match your filters.</div>
 </div>
 
-<div id="backdrop" class="backdrop">
+<div id="backdrop" class="backdrop" role="dialog" aria-modal="true" aria-hidden="true">
   <div class="modal">
     <div>
       <span id="closeBtn" class="close">✕</span>
@@ -116,138 +208,321 @@ button:hover{
 </div>
 
 <script>
+  // ===============================
+  // ✅ PASTE YOUR *PUBLISHED CSV* LINK BELOW
+  // Must look like .../pub?output=csv  (or ...&gid=...&single=true&output=csv)
+  // ===============================
+  const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrvzLfDN30Re_NAwIKCx3V1RTU1A_58ohgRA2dSLyDLJmSgFPMYK0YgcF2SsbgaYVT0QmY5ZYsN666/pub?gid=1646305040&single=true&output=csv";
+  // ===============================
 
-// ===============================
-// 🔴 PASTE YOUR PUBLISHED CSV LINK BELOW
-// ===============================
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrvzLfDN30Re_NAwIKCx3V1RTU1A_58ohgRA2dSLyDLJmSgFPMYK0YgcF2SsbgaYVT0QmY5ZYsN666/pub?gid=1646305040&single=true&output=csv";
-// ===============================
+  // Column indices (0-based): B=1, AE=30, AF=31, AG=32
+  const COL_TITLE = 1;
+  const COL_DOMAIN = 30;
+  const COL_EDU = 31;
+  const COL_LOCATION = 32;
 
+  // Adjust if needed
+  const COL_DESCRIPTION = 2; // C
+  const COL_URL = 3;         // D
 
-let opportunities = [];
+  let opportunities = [];
 
-const grid = document.getElementById("grid");
-const backdrop = document.getElementById("backdrop");
-const modalTitle = document.getElementById("modalTitle");
-const modalBody = document.getElementById("modalBody");
-const closeBtn = document.getElementById("closeBtn");
+  // Multi-select sets
+  const selected = {
+    domain: new Set(),
+    edu: new Set(),
+    location: new Set()
+  };
 
-function parseCSV(text){
-  const rows = [];
-  let row = [];
-  let cell = "";
-  let inQuotes = false;
+  const statusEl = document.getElementById("status");
+  const grid = document.getElementById("grid");
+  const emptyEl = document.getElementById("empty");
 
-  for(let i=0;i<text.length;i++){
-    const c = text[i];
-    const next = text[i+1];
+  const domainChips = document.getElementById("domainChips");
+  const eduChips = document.getElementById("eduChips");
+  const locChips = document.getElementById("locChips");
 
-    if(c === '"' && inQuotes && next === '"'){
-      cell += '"';
-      i++;
-      continue;
-    }
+  const clearDomain = document.getElementById("clearDomain");
+  const clearEdu = document.getElementById("clearEdu");
+  const clearLoc = document.getElementById("clearLoc");
+  const resetBtn = document.getElementById("resetBtn");
 
-    if(c === '"'){
-      inQuotes = !inQuotes;
-      continue;
-    }
+  const backdrop = document.getElementById("backdrop");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalBody = document.getElementById("modalBody");
+  const closeBtn = document.getElementById("closeBtn");
 
-    if(c === "," && !inQuotes){
-      row.push(cell);
-      cell = "";
-      continue;
-    }
-
-    if((c === "\n" || c === "\r") && !inQuotes){
-      if(c === "\r" && next === "\n") i++;
-      row.push(cell);
-      rows.push(row);
-      row = [];
-      cell = "";
-      continue;
-    }
-
-    cell += c;
+  // Split "Medicine; Engineering" -> ["Medicine","Engineering"]
+  // Also trims and drops blanks. Supports semicolons and commas (optional).
+  function parseTags(cell){
+    const raw = String(cell ?? "").trim();
+    if(!raw) return [];
+    return raw
+      .split(/[;,]/g)
+      .map(s => s.trim())
+      .filter(Boolean);
   }
 
-  if(cell.length || row.length){
-    row.push(cell);
-    rows.push(row);
+  function anySelectedMatch(selectedSet, tagsArray){
+    if(selectedSet.size === 0) return true;           // no filter in this category
+    for(const t of tagsArray){
+      if(selectedSet.has(t)) return true;             // OR logic within category
+    }
+    return false;
   }
 
-  return rows;
-}
+  function parseCSV(text){
+    const rows = [];
+    let row = [];
+    let cell = "";
+    let inQuotes = false;
 
-async function loadData(){
-  const res = await fetch(SHEET_URL);
-  const text = await res.text();
-  const rows = parseCSV(text);
+    for(let i=0;i<text.length;i++){
+      const c = text[i];
+      const next = text[i+1];
 
-  // skip header row (row 0)
-  for(let i=1;i<rows.length;i++){
-    const r = rows[i];
+      if(c === '"' && inQuotes && next === '"'){ cell += '"'; i++; continue; }
+      if(c === '"'){ inQuotes = !inQuotes; continue; }
 
-    if(!r[1]) continue; // skip if no title
+      if(c === "," && !inQuotes){ row.push(cell); cell=""; continue; }
 
-    opportunities.push({
-      id: "row-" + i,
-      title: r[1],        // Column B
-      description: r[2] || "",  // Column C (change if needed)
-      url: r[3] || "",    // Column D (change if needed)
-      domain: r[30] || "",      // AE
-      eduLevel: r[31] || "",    // AF
-      locationType: r[32] || "" // AG
+      if((c === "\n" || c === "\r") && !inQuotes){
+        if(c === "\r" && next === "\n") i++;
+        row.push(cell); rows.push(row);
+        row=[]; cell="";
+        continue;
+      }
+
+      cell += c;
+    }
+
+    if(cell.length || row.length){ row.push(cell); rows.push(row); }
+    return rows;
+  }
+
+  function escapeHtml(str){
+    return String(str ?? "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function uniqSorted(values){
+    const set = new Set(values.map(v => String(v || "").trim()).filter(Boolean));
+    return Array.from(set).sort((a,b) => a.localeCompare(b));
+  }
+
+  async function loadData(){
+    if(!SHEET_URL || SHEET_URL.includes("PASTE_YOUR_PUBLISHED")){
+      throw new Error("SHEET_URL is not set. Paste your published CSV link into SHEET_URL.");
+    }
+
+    const url = SHEET_URL + (SHEET_URL.includes("?") ? "&" : "?") + "cb=" + Date.now();
+    const res = await fetch(url, { cache: "no-store" });
+    if(!res.ok) throw new Error("Fetch failed: HTTP " + res.status);
+
+    const text = await res.text();
+    if(text.trim().startsWith("<!DOCTYPE") || text.includes("<html")){
+      throw new Error("Sheet link returned HTML, not CSV. Use Publish to web → CSV (output=csv).");
+    }
+
+    const rows = parseCSV(text).filter(r => r.some(v => String(v).trim() !== ""));
+    if(rows.length <= 1) return [];
+
+    const out = [];
+    for(let i=1;i<rows.length;i++){
+      const r = rows[i];
+      const title = (r[COL_TITLE] ?? "").trim();
+      if(!title) continue;
+
+      const domainCell = (r[COL_DOMAIN] ?? "").trim();
+      const eduCell = (r[COL_EDU] ?? "").trim();
+      const locCell = (r[COL_LOCATION] ?? "").trim();
+
+      out.push({
+        id: "row-" + i,
+        title,
+        // raw cells (for display)
+        domainRaw: domainCell,
+        eduRaw: eduCell,
+        locRaw: locCell,
+        // parsed tag arrays (for filtering)
+        domainTags: parseTags(domainCell),
+        eduTags: parseTags(eduCell),
+        locTags: parseTags(locCell),
+
+        description: (r[COL_DESCRIPTION] ?? "").trim(),
+        url: (r[COL_URL] ?? "").trim(),
+      });
+    }
+    return out;
+  }
+
+  function buildChips(container, values, groupKey){
+    container.innerHTML = "";
+    for(const v of values){
+      const label = document.createElement("label");
+      label.className = "chip";
+      label.dataset.group = groupKey;
+      label.dataset.value = v;
+      label.dataset.checked = "false";
+      label.innerHTML = `<input type="checkbox"/><span>${escapeHtml(v)}</span>`;
+      container.appendChild(label);
+    }
+  }
+
+  function syncChipStyles(container, groupKey){
+    container.querySelectorAll(".chip").forEach(chip => {
+      const value = chip.dataset.value;
+      const isOn = selected[groupKey].has(value);
+      chip.dataset.checked = isOn ? "true" : "false";
+      chip.querySelector("input").checked = isOn;
     });
   }
 
-  renderCards();
-}
+  function getFiltered(){
+    return opportunities.filter(o => {
+      const domainOk = anySelectedMatch(selected.domain, o.domainTags);
+      const eduOk = anySelectedMatch(selected.edu, o.eduTags);
+      const locOk = anySelectedMatch(selected.location, o.locTags);
+      return domainOk && eduOk && locOk; // AND across categories
+    });
+  }
 
-function renderCards(){
-  grid.innerHTML = "";
+  function renderCards(list){
+    grid.innerHTML = "";
+    emptyEl.classList.toggle("show", list.length === 0);
 
-  opportunities.forEach(opp => {
-    const card = document.createElement("div");
-    card.className = "card";
+    for(const opp of list){
+      const card = document.createElement("div");
+      card.className = "card";
 
-    card.innerHTML = `
-      <h3 class="title">${opp.title}</h3>
-      <div class="meta">
-        <div><strong>Domain:</strong> ${opp.domain}</div>
-        <div><strong>Education Level:</strong> ${opp.eduLevel}</div>
-        <div><strong>Location Type:</strong> ${opp.locationType}</div>
-      </div>
-      <button data-id="${opp.id}">Details</button>
-    `;
+      // Keep architecture hooks (store raw strings)
+      card.dataset.domain = opp.domainRaw;
+      card.dataset.edu = opp.eduRaw;
+      card.dataset.location = opp.locRaw;
 
-    grid.appendChild(card);
+      card.innerHTML = `
+        <h3 class="title">${escapeHtml(opp.title)}</h3>
+        <div class="meta">
+          <div><strong>Domain:</strong> ${escapeHtml(opp.domainRaw)}</div>
+          <div><strong>Education Level:</strong> ${escapeHtml(opp.eduRaw)}</div>
+          <div><strong>Location Type:</strong> ${escapeHtml(opp.locRaw)}</div>
+        </div>
+        <button class="details" data-id="${escapeHtml(opp.id)}">Details</button>
+      `;
+      grid.appendChild(card);
+    }
+  }
+
+  function updateStatus(filteredCount){
+    const parts = [];
+    if(selected.domain.size) parts.push(`Domain: ${Array.from(selected.domain).join(", ")}`);
+    if(selected.edu.size) parts.push(`Edu: ${Array.from(selected.edu).join(", ")}`);
+    if(selected.location.size) parts.push(`Location: ${Array.from(selected.location).join(", ")}`);
+
+    statusEl.textContent = parts.length
+      ? `Showing ${filteredCount} / ${opportunities.length} (${parts.join(" • ")})`
+      : `Showing ${filteredCount} / ${opportunities.length}`;
+  }
+
+  function applyAndRender(){
+    const filtered = getFiltered();
+    renderCards(filtered);
+    updateStatus(filtered.length);
+    syncChipStyles(domainChips, "domain");
+    syncChipStyles(eduChips, "edu");
+    syncChipStyles(locChips, "location");
+  }
+
+  function attachChipHandler(container, groupKey){
+    container.addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if(!chip) return;
+      const value = chip.dataset.value;
+
+      if(selected[groupKey].has(value)) selected[groupKey].delete(value);
+      else selected[groupKey].add(value);
+
+      applyAndRender();
+    });
+  }
+
+  attachChipHandler(domainChips, "domain");
+  attachChipHandler(eduChips, "edu");
+  attachChipHandler(locChips, "location");
+
+  clearDomain.addEventListener("click", () => { selected.domain.clear(); applyAndRender(); });
+  clearEdu.addEventListener("click", () => { selected.edu.clear(); applyAndRender(); });
+  clearLoc.addEventListener("click", () => { selected.location.clear(); applyAndRender(); });
+
+  resetBtn.addEventListener("click", () => {
+    selected.domain.clear();
+    selected.edu.clear();
+    selected.location.clear();
+    applyAndRender();
   });
-}
 
-grid.addEventListener("click", function(e){
-  if(e.target.tagName === "BUTTON"){
-    const id = e.target.dataset.id;
-    const opp = opportunities.find(o => o.id === id);
+  // Details modal
+  grid.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-id]");
+    if(!btn) return;
+
+    const opp = opportunities.find(o => o.id === btn.dataset.id);
     if(!opp) return;
 
     modalTitle.textContent = opp.title;
-    modalBody.innerHTML = `
-      <p>${opp.description.replaceAll("\n","<br>")}</p>
-      ${opp.url ? `<p><a href="${opp.url}" target="_blank">Open Link ↗</a></p>` : ""}
-    `;
 
+    const desc = escapeHtml(opp.description).replaceAll("\n","<br>");
+    const link = opp.url
+      ? `<p style="margin-top:12px;"><a href="${escapeHtml(opp.url)}" target="_blank" rel="noopener">Open link ↗</a></p>`
+      : "";
+
+    modalBody.innerHTML = `<p>${desc}</p>${link}`;
     backdrop.classList.add("open");
-  }
-});
+    backdrop.setAttribute("aria-hidden", "false");
+  });
 
-closeBtn.addEventListener("click", () => backdrop.classList.remove("open"));
-backdrop.addEventListener("click", e => {
-  if(e.target === backdrop) backdrop.classList.remove("open");
-});
+  closeBtn.addEventListener("click", () => {
+    backdrop.classList.remove("open");
+    backdrop.setAttribute("aria-hidden", "true");
+  });
 
-loadData();
+  backdrop.addEventListener("click", (e) => {
+    if(e.target === backdrop){
+      backdrop.classList.remove("open");
+      backdrop.setAttribute("aria-hidden", "true");
+    }
+  });
 
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape" && backdrop.classList.contains("open")){
+      backdrop.classList.remove("open");
+      backdrop.setAttribute("aria-hidden", "true");
+    }
+  });
+
+  // Init
+  (async function init(){
+    try{
+      opportunities = await loadData();
+
+      // Build chip options from *all tags* (split semicolons)
+      const domainOpts = uniqSorted(opportunities.flatMap(o => o.domainTags));
+      const eduOpts = uniqSorted(opportunities.flatMap(o => o.eduTags));
+      const locOpts = uniqSorted(opportunities.flatMap(o => o.locTags));
+
+      buildChips(domainChips, domainOpts, "domain");
+      buildChips(eduChips, eduOpts, "edu");
+      buildChips(locChips, locOpts, "location");
+
+      applyAndRender();
+    }catch(err){
+      console.error(err);
+      statusEl.textContent = "ERROR: " + err.message;
+      renderCards([]);
+      emptyEl.classList.add("show");
+    }
+  })();
 </script>
 </body>
 </html>
