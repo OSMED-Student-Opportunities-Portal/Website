@@ -25,6 +25,35 @@
     font-size:14px;
   }
 
+  /* SEARCH */
+  .searchbar{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  .searchbar input{
+    flex:1;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:12px 14px;
+    font-size:14px;
+    outline:none;
+  }
+  .searchbar input:focus{
+    box-shadow:0 0 0 3px rgba(17,24,39,.12);
+  }
+  .clear-search{
+    border:1px solid var(--border);
+    background:#fff;
+    border-radius:14px;
+    padding:12px 14px;
+    font-weight:900;
+    cursor:pointer;
+  }
+  .clear-search:hover{background:#f3f4f6;}
+
+  /* FILTERS */
   .filters{
     display:grid;
     grid-template-columns:repeat(3, minmax(0,1fr));
@@ -102,17 +131,19 @@
     display:flex;
     justify-content:flex-end;
     margin-bottom:12px;
+    gap:10px;
   }
   .reset{
     border:1px solid var(--border);
     background:#fff;
-    border-radius:12px;
-    padding:10px 12px;
+    border-radius:14px;
+    padding:12px 14px;
     font-weight:900;
     cursor:pointer;
   }
   .reset:hover{background:#f3f4f6;}
 
+  /* CARDS */
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
   @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr);}}
   @media(max-width:600px){.grid{grid-template-columns:1fr;}}
@@ -137,6 +168,7 @@
   }
   .details:hover{background:#000;}
 
+  /* MODAL */
   .backdrop{
     position:fixed;inset:0;background:rgba(0,0,0,.5);
     display:none;align-items:center;justify-content:center;padding:20px;
@@ -146,6 +178,7 @@
   .modal{background:#fff;max-width:750px;width:100%;border-radius:18px;padding:20px;}
   .close{float:right;cursor:pointer;font-weight:900;}
 
+  /* EMPTY */
   .empty{
     display:none;
     margin-top:12px;
@@ -163,6 +196,13 @@
 <div class="wrap">
   <div id="status" class="status">Loading opportunities…</div>
 
+  <!-- SEARCH -->
+  <div class="searchbar">
+    <input id="searchInput" type="text" placeholder="Search opportunity names (e.g., NASA, lab, internship)"/>
+    <button id="clearSearch" class="clear-search" type="button">Clear</button>
+  </div>
+
+  <!-- FILTERS -->
   <div class="filters">
     <div class="filter">
       <div class="filter-head">
@@ -194,7 +234,7 @@
   </div>
 
   <div id="grid" class="grid"></div>
-  <div id="empty" class="empty">No opportunities match your filters.</div>
+  <div id="empty" class="empty">No opportunities match your search/filters.</div>
 </div>
 
 <div id="backdrop" class="backdrop" role="dialog" aria-modal="true" aria-hidden="true">
@@ -234,9 +274,15 @@
     location: new Set()
   };
 
+  // Search state
+  let searchQuery = "";
+
   const statusEl = document.getElementById("status");
   const grid = document.getElementById("grid");
   const emptyEl = document.getElementById("empty");
+
+  const searchInput = document.getElementById("searchInput");
+  const clearSearch = document.getElementById("clearSearch");
 
   const domainChips = document.getElementById("domainChips");
   const eduChips = document.getElementById("eduChips");
@@ -252,8 +298,6 @@
   const modalBody = document.getElementById("modalBody");
   const closeBtn = document.getElementById("closeBtn");
 
-  // Split "Medicine; Engineering" -> ["Medicine","Engineering"]
-  // Also trims and drops blanks. Supports semicolons and commas (optional).
   function parseTags(cell){
     const raw = String(cell ?? "").trim();
     if(!raw) return [];
@@ -264,9 +308,9 @@
   }
 
   function anySelectedMatch(selectedSet, tagsArray){
-    if(selectedSet.size === 0) return true;           // no filter in this category
+    if(selectedSet.size === 0) return true; // no filter in this category
     for(const t of tagsArray){
-      if(selectedSet.has(t)) return true;             // OR logic within category
+      if(selectedSet.has(t)) return true;   // OR within category
     }
     return false;
   }
@@ -341,11 +385,11 @@
       out.push({
         id: "row-" + i,
         title,
-        // raw cells (for display)
+
         domainRaw: domainCell,
         eduRaw: eduCell,
         locRaw: locCell,
-        // parsed tag arrays (for filtering)
+
         domainTags: parseTags(domainCell),
         eduTags: parseTags(eduCell),
         locTags: parseTags(locCell),
@@ -379,12 +423,19 @@
     });
   }
 
+  function titleMatchesSearch(title){
+    const q = searchQuery.trim().toLowerCase();
+    if(!q) return true;
+    return String(title || "").toLowerCase().includes(q);
+  }
+
   function getFiltered(){
     return opportunities.filter(o => {
+      const searchOk = titleMatchesSearch(o.title);
       const domainOk = anySelectedMatch(selected.domain, o.domainTags);
       const eduOk = anySelectedMatch(selected.edu, o.eduTags);
       const locOk = anySelectedMatch(selected.location, o.locTags);
-      return domainOk && eduOk && locOk; // AND across categories
+      return searchOk && domainOk && eduOk && locOk; // AND across everything
     });
   }
 
@@ -396,7 +447,7 @@
       const card = document.createElement("div");
       card.className = "card";
 
-      // Keep architecture hooks (store raw strings)
+      // Architecture hooks
       card.dataset.domain = opp.domainRaw;
       card.dataset.edu = opp.eduRaw;
       card.dataset.location = opp.locRaw;
@@ -416,6 +467,8 @@
 
   function updateStatus(filteredCount){
     const parts = [];
+    const q = searchQuery.trim();
+    if(q) parts.push(`Search: "${q}"`);
     if(selected.domain.size) parts.push(`Domain: ${Array.from(selected.domain).join(", ")}`);
     if(selected.edu.size) parts.push(`Edu: ${Array.from(selected.edu).join(", ")}`);
     if(selected.location.size) parts.push(`Location: ${Array.from(selected.location).join(", ")}`);
@@ -438,8 +491,8 @@
     container.addEventListener("click", (e) => {
       const chip = e.target.closest(".chip");
       if(!chip) return;
-      const value = chip.dataset.value;
 
+      const value = chip.dataset.value;
       if(selected[groupKey].has(value)) selected[groupKey].delete(value);
       else selected[groupKey].add(value);
 
@@ -455,14 +508,34 @@
   clearEdu.addEventListener("click", () => { selected.edu.clear(); applyAndRender(); });
   clearLoc.addEventListener("click", () => { selected.location.clear(); applyAndRender(); });
 
+  // SEARCH EVENTS
+  // small debounce so it doesn't re-render on every keystroke too aggressively
+  let searchTimer = null;
+  searchInput.addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = searchInput.value || "";
+      applyAndRender();
+    }, 120);
+  });
+
+  clearSearch.addEventListener("click", () => {
+    searchInput.value = "";
+    searchQuery = "";
+    applyAndRender();
+    searchInput.focus();
+  });
+
   resetBtn.addEventListener("click", () => {
     selected.domain.clear();
     selected.edu.clear();
     selected.location.clear();
+    searchInput.value = "";
+    searchQuery = "";
     applyAndRender();
   });
 
-  // Details modal
+  // DETAILS MODAL
   grid.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-id]");
     if(!btn) return;
@@ -501,12 +574,11 @@
     }
   });
 
-  // Init
+  // INIT
   (async function init(){
     try{
       opportunities = await loadData();
 
-      // Build chip options from *all tags* (split semicolons)
       const domainOpts = uniqSorted(opportunities.flatMap(o => o.domainTags));
       const eduOpts = uniqSorted(opportunities.flatMap(o => o.eduTags));
       const locOpts = uniqSorted(opportunities.flatMap(o => o.locTags));
